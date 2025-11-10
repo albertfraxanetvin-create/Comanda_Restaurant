@@ -48,16 +48,17 @@ public class Restaurant {
     }
 
     static String llegirString(String missatge) {
-        while (true) {
-            System.out.println(missatge);
-            String valor = scanner.nextLine().trim();
-            if (!valor.isEmpty()) {
-                return valor;
-            } else {
-                System.out.println("ERROR: El text no pot estar buit.");
-            }
+    while (true) {
+        System.out.println(missatge);
+        String valor = scanner.nextLine(); 
+        if (!valor.isBlank()) { 
+            return valor;
+        } else {
+            System.out.println("ERROR: El text no pot estar buit.");
         }
     }
+}
+
 
     static int llegirInt(String missatge) {
         while (true) {
