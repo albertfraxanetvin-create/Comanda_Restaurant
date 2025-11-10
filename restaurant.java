@@ -1,9 +1,9 @@
-package Restaurant;
+package RestaurantActivitat;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class restaurant {
+public class Restaurant {
 
     static Scanner scanner = new Scanner(System.in);
     static double IVA_PERCENT = 10.0;
@@ -117,7 +117,7 @@ public class restaurant {
 
     static void actualitzarComanda() {
         if (clientUltimaComanda == null) {
-            System.out.println("No hi ha comanda prèvia per actualitzar.\n");
+            System.out.println("No hi ha cap comanda enregistrada.\n");
             return;
         }
 
