@@ -5,10 +5,22 @@ import java.util.Scanner;
 
 public class restaurant {
     static Scanner scanner = new Scanner(System.in);
+
+    // Variables globals per guardar l'última comanda
+    static String clientUltimaComanda;
+    static String tiquetUltimaComanda; 
+    static double totalUltimaComanda;
+    // Variables per calcular l'import de la comanda
+    static double ivaPercent = 10;
+    static double iva = totalUltimaComanda * ivaPercent / 100;
+    static double totalPagar = totalUltimaComanda + iva;
+
     public static void main(String[] args) {
         boolean continuar = true;
         while (continuar) {
-            System.out.println("--------------------------------------\n===== GESTIÓ COMANDES RESTAURANT =====\n--------------------------------------");
+            System.out.println("--------------------------------------");
+            System.out.println("===== GESTIÓ COMANDES RESTAURANT =====");
+            System.out.println("--------------------------------------");
             System.out.println("1. Crear nova comanda");
             System.out.println("2. Actualitzar comanda anterior");
             System.out.println("3. Visualitzar últim tiquet");
@@ -26,7 +38,9 @@ public class restaurant {
                     break;
                 case 4:
                     continuar = false;
-                    System.out.println("Sortint del menú de comandes");
+                    System.out.println("--------------------------------------");
+                    System.out.println("========== FINS LA PROPERA! ==========");
+                    System.out.println("--------------------------------------");
                     break;
                 default:
                     System.out.println("Opció no vàlida.");
@@ -34,7 +48,20 @@ public class restaurant {
             }
         }
     }
-    public static int llegirInt (String missatge) {
+
+    public static String llegirString(String missatge) {
+    while (true) {
+        System.out.println(missatge);
+        String valor = scanner.nextLine().trim();
+        if (!valor.isEmpty()) {
+            return valor;
+        } else {
+            System.out.println("ERROR: El text no pot estar buit.");
+        }
+      }
+    }
+
+    public static int llegirInt(String missatge) {
         while (true) {
             System.out.println(missatge);
             try {
@@ -47,44 +74,115 @@ public class restaurant {
             }
         }
     }
+
+    public static double llegirDouble(String missatge) {
+        while (true) {
+            System.out.println(missatge);
+            try {
+                double valor = scanner.nextDouble();
+                scanner.nextLine();
+                return valor;
+            } catch (InputMismatchException e) {
+                System.out.println("ERROR: Introdueix un número vàlid.");
+                scanner.nextLine();
+            }
+        }
+    }
+
     public static void novaComanda() {
-        Boolean opcio = true;
-        while (opcio) {
-            System.out.println("--------------------------------------\n============ NOVA COMANDA ============\n--------------------------------------");
-            System.out.print("Introdueix el nom del client: ");
-            String client = scanner.nextLine();
+
+        System.out.print("Introdueix el nom del client: ");
+        clientUltimaComanda = scanner.nextLine();
+        totalUltimaComanda = 0;
+        tiquetUltimaComanda = "";
+        boolean afegirMes = true;
+        while (afegirMes) {
             System.out.print("Introdueix el producte: ");
-            String producte = scanner.nextLine();
-            System.out.print("Preu unitari (€): ");
-            double preu = llegirInt("Selecciona un número: "); // Crear nou try and catch!
-            System.out.print("Quantitat: ");
-            int quantitat = llegirInt("Selecciona un número: ");
+            String producte = llegirString("Nom del producte: ");
+            double preu = llegirDouble("Preu unitari (€): ");
+            int quantitat = llegirInt("Quantitat: ");
+
+            double subtotal = preu * quantitat;
+            totalUltimaComanda += subtotal;
+            tiquetUltimaComanda += String.format("%-15s %-10d %-12.2f %-10.2f%n", producte, quantitat, preu, subtotal);
             System.out.print("Vols afegir un altre producte? (s/n): ");
             String siNO = scanner.nextLine();
-            switch (opcio) {
-                case s:
-                    
-                    break;
-                case n:
-            
-                default:
-                    break;
+            if (!siNO.equalsIgnoreCase("s")) {
+                afegirMes = false;
             }
-            String siNo = scanner.nextLine();
-            
-            System.out.println("\n--- Dades introduïdes ---");
-            System.out.println("Client: " + client);
-            System.out.println("Producte: " + producte);
-            System.out.println("Preu unitari: " + preu);
-            System.out.println("Quantitat: " + quantitat);
-            System.out.println("Vol afegir més productes: " + siNo);
         }
-        System.out.println("S’està generant el tiquet…");
+        System.out.println("S’està generant el tiquet…\n");
+        
+        System.out.println("--------------------------------------------------");
+        System.out.println("===================== TIQUET =====================");
+        System.out.println("--------------------------------------------------");
+        System.out.println("Client: " + clientUltimaComanda + "\n");
+        System.out.printf("%-15s %-10s %-12s %-10s%n", "Producte", "Quantitat", "Preu unit.", "Subtotal");
+        System.out.println("--------------------------------------------------");
+        System.out.print(tiquetUltimaComanda);
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Total sense IVA:%33.2f €%n", totalUltimaComanda);
+        System.out.printf("IVA (10%%):%37.2f €%n", iva);
+        System.out.printf("TOTAL A PAGAR:%34.2f €%n", totalPagar);
+        System.out.println("==================================================\n");
+
+        System.out.println("Comanda enregistrada correctament.\n");
     }
+
     public static void actualitzarComanda() {
+        
+        boolean afegirMes = true;
+        while (afegirMes) {
+            System.out.print("Introdueix un nou producte: ");
+            String producte = llegirString("Nom del producte: ");
+            double preu = llegirDouble("Preu unitari (€): ");
+            int quantitat = llegirInt("Quantitat: ");
 
+            double subtotal = preu * quantitat;
+            totalUltimaComanda += subtotal;
+            tiquetUltimaComanda += String.format("%-15s %-10d %-12.2f %-10.2f%n", producte, quantitat, preu, subtotal);
+            System.out.print("Vols afegir un altre producte? (s/n): ");
+            String siNO = scanner.nextLine();
+            if (!siNO.equalsIgnoreCase("s")) {
+                afegirMes = false;
+            }
+        }
+        System.out.println("S’està actualitzant la comanda…\n");
+        
+        System.out.println("--------------------------------------------------");
+        System.out.println("=============== TIQUET ACTUALITZAT ===============");
+        System.out.println("--------------------------------------------------");
+        System.out.println("Client: " + clientUltimaComanda + "\n");
+        System.out.printf("%-15s %-10s %-12s %-10s%n", "Producte", "Quantitat", "Preu unit.", "Subtotal");
+        System.out.println("--------------------------------------------------");
+        System.out.print(tiquetUltimaComanda);
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Total sense IVA:%33.2f €%n", totalUltimaComanda);
+        System.out.printf("IVA (10%%):%37.2f €%n", iva);
+        System.out.printf("TOTAL A PAGAR:%34.2f €%n", totalPagar);
+        System.out.println("==================================================\n");
+
+        System.out.println("Comanda actualitzada correctament.\n");
+        
     }
-    public static void visualitzarTiquet() {
 
+    public static void visualitzarTiquet() {
+        if (clientUltimaComanda == null) {
+            System.out.println("No hi ha cap comanda registrada.");
+            return;
+        }
+
+        System.out.println("--------------------------------------------------");
+        System.out.println("===================== TIQUET =====================");
+        System.out.println("--------------------------------------------------");
+        System.out.println("Client: " + clientUltimaComanda + "\n");
+        System.out.printf("%-15s %-10s %-12s %-10s%n", "Producte", "Quantitat", "Preu unit.", "Subtotal");
+        System.out.println("--------------------------------------------------");
+        System.out.print(tiquetUltimaComanda);
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Total sense IVA:%33.2f €%n", totalUltimaComanda);
+        System.out.printf("IVA (10%%):%37.2f €%n", iva);
+        System.out.printf("TOTAL A PAGAR:%34.2f €%n", totalPagar);
+        System.out.println("==================================================\n");
     }
 }
