@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Restaurant {
 
     static Scanner scanner = new Scanner(System.in);
-    static final double IVA_PERCENT = 10.0;
+    static final double IvaPerCent = 10.0;
 
     static String clientUltimaComanda;
     static String tiquetUltimaComanda;
@@ -23,7 +23,7 @@ public class Restaurant {
                 case 3 -> visualitzarTiquet();
                 case 4 -> {
                     continuar = false;
-                    acomiadarUsuari();
+                    despedirUsuari();
                 }
                 default -> System.out.println("Opció no vàlida.");
             }
@@ -40,47 +40,54 @@ public class Restaurant {
         System.out.println("4. Sortir");
     }
 
-    static void acomiadarUsuari() {
+    static void despedirUsuari() {
         System.out.println("--------------------------------------");
         System.out.println("========== FINS LA PROPERA! ==========");
         System.out.println("--------------------------------------");
     }
 
     static String llegirString(String missatge) {
-        while (true) {
+        String valor;
+        do {
             System.out.println(missatge);
-            String valor = scanner.nextLine();
-            if (!valor.isBlank()) return valor;
-            System.out.println("ERROR: El text no pot estar buit.");
-        }
+            valor = scanner.nextLine();
+            if (valor.isBlank()) System.out.println("ERROR: El text no pot estar buit.");
+        } while (valor.isBlank());
+        return valor;
     }
 
     static int llegirInt(String missatge) {
-        while (true) {
+        int valor = 0;
+        boolean valid = false;
+        do {
             System.out.println(missatge);
             try {
-                int valor = scanner.nextInt();
+                valor = scanner.nextInt();
                 scanner.nextLine();
-                return valor;
+                valid = true;
             } catch (InputMismatchException e) {
                 System.out.println("ERROR: Introdueix un número vàlid.");
                 scanner.nextLine();
             }
-        }
+        } while (!valid);
+        return valor;
     }
 
     static double llegirDouble(String missatge) {
-        while (true) {
+        double valor = 0;
+        boolean valid = false;
+        do {
             System.out.println(missatge);
             try {
-                double valor = scanner.nextDouble();
+                valor = scanner.nextDouble();
                 scanner.nextLine();
-                return valor;
+                valid = true;
             } catch (InputMismatchException e) {
                 System.out.println("ERROR: Introdueix un número vàlid.");
                 scanner.nextLine();
             }
-        }
+        } while (!valid);
+        return valor;
     }
 
     static void novaComanda() {
@@ -88,6 +95,7 @@ public class Restaurant {
         totalUltimaComanda = 0;
         tiquetUltimaComanda = "";
         gestionarProductes();
+        System.out.println("S’està generant el tiquet…");
         imprimirTiquet();
         System.out.println("Comanda enregistrada correctament.\n");
     }
@@ -124,13 +132,14 @@ public class Restaurant {
     }
 
     static boolean demanarContinuar() {
-        while (true) {
+        String resposta;
+        do {
             System.out.print("Vols afegir un altre producte? (s/n): ");
-            String resposta = scanner.nextLine().toLowerCase();
-            if (resposta.equals("s")) return true;
-            if (resposta.equals("n")) return false;
-            System.out.println("ERROR: Introdueix 's' o 'n'.");
-        }
+            resposta = scanner.nextLine().toLowerCase();
+            if (!resposta.equals("s") && !resposta.equals("n"))
+                System.out.println("ERROR: Introdueix 's' o 'n'.");
+        } while (!resposta.equals("s") && !resposta.equals("n"));
+        return resposta.equals("s");
     }
 
     static void visualitzarTiquet() {
@@ -142,7 +151,7 @@ public class Restaurant {
     }
 
     static void imprimirTiquet() {
-        double iva = totalUltimaComanda * IVA_PERCENT / 100.0;
+        double iva = totalUltimaComanda * IvaPerCent / 100.0;
         double totalPagar = totalUltimaComanda + iva;
 
         System.out.println("--------------------------------------------------");
@@ -155,7 +164,7 @@ public class Restaurant {
         System.out.print(tiquetUltimaComanda);
         System.out.println("--------------------------------------------------");
         System.out.printf("Total sense IVA:%33.2f €%n", totalUltimaComanda);
-        System.out.printf("IVA (%.0f%%):%37.2f €%n", IVA_PERCENT, iva);
+        System.out.printf("IVA (%.0f%%):%37.2f €%n", IvaPerCent, iva);
         System.out.printf("TOTAL A PAGAR:%34.2f €%n", totalPagar);
         System.out.println("==================================================\n");
     }
