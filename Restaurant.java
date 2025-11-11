@@ -6,9 +6,8 @@ import java.util.Scanner;
 public class Restaurant {
 
     static Scanner scanner = new Scanner(System.in);
-    static double IVA_PERCENT = 10.0;
+    static final double IVA_PERCENT = 10.0;
 
-    // Información de l'última comanda
     static String clientUltimaComanda;
     static String tiquetUltimaComanda;
     static double totalUltimaComanda;
@@ -16,49 +15,45 @@ public class Restaurant {
     public static void main(String[] args) {
         boolean continuar = true;
         while (continuar) {
-            System.out.println("--------------------------------------");
-            System.out.println("===== GESTIÓ COMANDES RESTAURANT =====");
-            System.out.println("--------------------------------------");
-            System.out.println("1. Crear nova comanda");
-            System.out.println("2. Actualitzar comanda anterior");
-            System.out.println("3. Visualitzar últim tiquet");
-            System.out.println("4. Sortir");
-            int seleccio = llegirInt("> Tria una opció:");
-            switch (seleccio) {
-                case 1:
-                    novaComanda();
-                    break;
-                case 2:
-                    actualitzarComanda();
-                    break;
-                case 3:
-                    visualitzarTiquet();
-                    break;
-                case 4:
+            mostrarMenuPrincipal();
+            int opcio = llegirInt("> Tria una opció:");
+            switch (opcio) {
+                case 1 -> novaComanda();
+                case 2 -> actualitzarComanda();
+                case 3 -> visualitzarTiquet();
+                case 4 -> {
                     continuar = false;
-                    System.out.println("--------------------------------------");
-                    System.out.println("========== FINS LA PROPERA! ==========");
-                    System.out.println("--------------------------------------");
-                    break;
-                default:
-                    System.out.println("Opció no vàlida.");
-                    break;
+                    acomiadarUsuari();
+                }
+                default -> System.out.println("Opció no vàlida.");
             }
         }
     }
 
+    static void mostrarMenuPrincipal() {
+        System.out.println("--------------------------------------");
+        System.out.println("===== GESTIÓ COMANDES RESTAURANT =====");
+        System.out.println("--------------------------------------");
+        System.out.println("1. Crear nova comanda");
+        System.out.println("2. Actualitzar comanda anterior");
+        System.out.println("3. Visualitzar últim tiquet");
+        System.out.println("4. Sortir");
+    }
+
+    static void acomiadarUsuari() {
+        System.out.println("--------------------------------------");
+        System.out.println("========== FINS LA PROPERA! ==========");
+        System.out.println("--------------------------------------");
+    }
+
     static String llegirString(String missatge) {
-    while (true) {
-        System.out.println(missatge);
-        String valor = scanner.nextLine(); 
-        if (!valor.isBlank()) { 
-            return valor;
-        } else {
+        while (true) {
+            System.out.println(missatge);
+            String valor = scanner.nextLine();
+            if (!valor.isBlank()) return valor;
             System.out.println("ERROR: El text no pot estar buit.");
         }
     }
-}
-
 
     static int llegirInt(String missatge) {
         while (true) {
@@ -89,29 +84,10 @@ public class Restaurant {
     }
 
     static void novaComanda() {
-        System.out.print("Introdueix el nom del client: ");
-        clientUltimaComanda = scanner.nextLine();
+        clientUltimaComanda = llegirString("Introdueix el nom del client:");
         totalUltimaComanda = 0;
         tiquetUltimaComanda = "";
-
-        boolean afegirMes = true;
-        while (afegirMes) {
-            String producte = llegirString("Nom del producte: ");
-            double preu = llegirDouble("Preu unitari (€): ");
-            int quantitat = llegirInt("Quantitat: ");
-
-            double subtotal = preu * quantitat;
-            totalUltimaComanda += subtotal;
-            tiquetUltimaComanda += String.format("%-15s %-10d %-12.2f %-10.2f%n",
-                    producte, quantitat, preu, subtotal);
-
-            System.out.print("Vols afegir un altre producte? (s/n): ");
-            String siNO = scanner.nextLine();
-            if (!siNO.equalsIgnoreCase("s")) {
-                afegirMes = false;
-            }
-        }
-
+        gestionarProductes();
         imprimirTiquet();
         System.out.println("Comanda enregistrada correctament.\n");
     }
@@ -121,28 +97,40 @@ public class Restaurant {
             System.out.println("No hi ha cap comanda enregistrada.\n");
             return;
         }
-
-        boolean afegirMes = true;
-        while (afegirMes) {
-            String producte = llegirString("Nom del producte: ");
-            double preu = llegirDouble("Preu unitari (€): ");
-            int quantitat = llegirInt("Quantitat: ");
-
-            double subtotal = preu * quantitat;
-            totalUltimaComanda += subtotal;
-            tiquetUltimaComanda += String.format("%-15s %-10d %-12.2f %-10.2f%n",
-                    producte, quantitat, preu, subtotal);
-
-            System.out.print("Vols afegir un altre producte? (s/n): ");
-            String siNO = scanner.nextLine();
-            if (!siNO.equalsIgnoreCase("s")) {
-                afegirMes = false;
-            }
-        }
-
+        gestionarProductes();
         System.out.println("S’està actualitzant la comanda…\n");
         imprimirTiquet();
         System.out.println("Comanda actualitzada correctament.\n");
+    }
+
+    static void gestionarProductes() {
+        boolean afegirMes = true;
+        while (afegirMes) {
+            String producte = llegirString("Nom del producte:");
+            double preu = llegirDouble("Preu unitari (€):");
+            int quantitat = llegirInt("Quantitat:");
+            afegirProducte(producte, preu, quantitat);
+            afegirMes = demanarContinuar();
+        }
+    }
+
+    static void afegirProducte(String producte, double preu, int quantitat) {
+        double subtotal = preu * quantitat;
+        totalUltimaComanda += subtotal;
+        tiquetUltimaComanda += String.format(
+                "%-15s %-10d %-12.2f %-10.2f%n",
+                producte, quantitat, preu, subtotal
+        );
+    }
+
+    static boolean demanarContinuar() {
+        while (true) {
+            System.out.print("Vols afegir un altre producte? (s/n): ");
+            String resposta = scanner.nextLine().toLowerCase();
+            if (resposta.equals("s")) return true;
+            if (resposta.equals("n")) return false;
+            System.out.println("ERROR: Introdueix 's' o 'n'.");
+        }
     }
 
     static void visualitzarTiquet() {
