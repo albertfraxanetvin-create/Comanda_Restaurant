@@ -125,10 +125,17 @@ public class Restaurant {
     static void afegirProducte(String producte, double preu, int quantitat) {
         double subtotal = preu * quantitat;
         totalUltimaComanda += subtotal;
-        tiquetUltimaComanda += String.format(
-                "%-15s %-10d %-12.2f %-10.2f%n",
-                producte, quantitat, preu, subtotal
-        );
+        tiquetUltimaComanda += formatFila(producte, quantitat, preu, subtotal);
+    }
+
+    static String formatFila(String producte, int quantitat, double preu, double subtotal) {
+        String txt = producte;
+        if (producte.length() < 8) txt += "\t\t";
+        else if (producte.length() < 16) txt += "\t";
+        else txt += " ";
+
+        txt += quantitat + "\t\t" + preu + "\t\t" + subtotal + "\n";
+        return txt;
     }
 
     static boolean demanarContinuar() {
@@ -154,18 +161,17 @@ public class Restaurant {
         double iva = totalUltimaComanda * IvaPerCent / 100.0;
         double totalPagar = totalUltimaComanda + iva;
 
-        System.out.println("--------------------------------------------------");
-        System.out.println("===================== TIQUET =====================");
-        System.out.println("--------------------------------------------------");
-        System.out.println("Client: " + clientUltimaComanda + "\n");
-        System.out.printf("%-15s %-10s %-12s %-10s%n",
-                "Producte", "Quantitat", "Preu unit.", "Subtotal");
-        System.out.println("--------------------------------------------------");
+        System.out.println("----------------------------------------------------------");
+        System.out.println("========================= TIQUET =========================");
+        System.out.println("----------------------------------------------------------");
+        System.out.println("Client:\t" + clientUltimaComanda + "\n");
+        System.out.println("Producte\tQuantitat\tPreu unit.\tSubtotal");
+        System.out.println("----------------------------------------------------------");
         System.out.print(tiquetUltimaComanda);
-        System.out.println("--------------------------------------------------");
-        System.out.printf("Total sense IVA:%33.2f €%n", totalUltimaComanda);
-        System.out.printf("IVA (%.0f%%):%37.2f €%n", IvaPerCent, iva);
-        System.out.printf("TOTAL A PAGAR:%34.2f €%n", totalPagar);
-        System.out.println("==================================================\n");
+        System.out.println("----------------------------------------------------------");
+        System.out.println("Total sense IVA:\t\t" + totalUltimaComanda + " €");
+        System.out.println("IVA (" + IvaPerCent + "%):\t\t\t" + iva + " €");
+        System.out.println("TOTAL A PAGAR:\t\t\t" + totalPagar + " €");
+        System.out.println("==========================================================\n");
     }
 }
